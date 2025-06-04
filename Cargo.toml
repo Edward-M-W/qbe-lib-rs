@@ -1,0 +1,9 @@
+[package]
+name = "qbe-lib-rs"
+version = "0.1.0"
+edition = "2024"
+
+[build-dependencies]
+cc = "=1.2.25"
+tempdir = "0.3.7"
+build-target = "0.4.0"

@@ -1,0 +1,56 @@
+# equivalent to the c code:
+# int fib(int n) {
+#   if (n < 2) return n;
+#   else return fib(n-1) + fib(n-2);
+# }
+function w $fib(w %n) {
+@start
+    %should_early_ret =w cultw %n, 2 # bool should_early_ret = n < 2;
+    jnz %should_early_ret, @early_ret, @calculate
+@early_ret
+    ret %n
+@calculate
+    %n_minus_1 =w sub %n, 1
+    %n_minus_2 =w sub %n, 2
+
+    %fib_1 =w call $fib(w %n_minus_1)
+    %fib_2 =w call $fib(w %n_minus_2)
+
+    %result =w add %fib_1, %fib_2
+
+    ret %result
+}
+
+# Main function 
+# equivalent to the c code:
+# int main(int argc, char** argv) {
+#   if (argc != 2) {
+#      puts("The input is expected to be a  number; ./run.sh 10");
+#      return 1;
+#   }
+#   char* fib_string = argv[1];
+#   int num = atoi(fib_string);
+#   int fib_val = fib(num);
+#   printf("The fibonacci of %s is %d!\n", fib_string, fib_val);
+# }
+export function w $main(w %argc, l %argv) {
+@start
+    %argc_correct =w ceqw %argc, 2
+    jnz %argc_correct, @run, @error
+@error
+    call $puts(l $input_notice)
+    ret 1
+@run
+    %fib_offset =l add %argv, 8
+    %fib_string =l loadl %fib_offset
+    %num =w call $atoi(l %fib_string)
+
+    %fib_val =w call $fib(w %num)
+
+    call $printf(l $fmt, ..., l %fib_string, w %fib_val) # a call with var args
+
+	ret 0
+}
+
+data $input_notice = { b "The input is expected to be a number; ./run.sh 10\0" }
+data $fmt = { b "The fibonnacci of %s is %d!\n", b 0 }
