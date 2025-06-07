@@ -1,4 +1,4 @@
-use std::{env::current_dir, fs};
+use std::fs;
 
 use build_target::{Arch, Os};
 use tempdir::TempDir;
